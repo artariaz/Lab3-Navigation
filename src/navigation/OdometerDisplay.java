@@ -2,9 +2,6 @@ package navigation;
 
 import lejos.hardware.lcd.TextLCD;
 
-<<<<<<< HEAD
-	
-=======
 public class OdometerDisplay extends Thread {
 
 	private static final long DISPLAY_PERIOD = 250;
@@ -95,6 +92,5 @@ public class OdometerDisplay extends Thread {
 		
 		return result;
 	}
->>>>>>> dd149c900f9c216937e5f10217195069c4a56ce8
 
 }
