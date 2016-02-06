@@ -61,14 +61,7 @@ public class Navigator extends Thread {
 				e.printStackTrace();
 			}
 		}
-<<<<<<< HEAD
-=======
 
-		travelTo(60, 30);
-		travelTo(30, 30);
-		travelTo(30, 60);
-		travelTo(60, 0);
->>>>>>> origin
 	}
 
 	public double getDestAngle() {
