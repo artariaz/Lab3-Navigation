@@ -22,14 +22,26 @@ public class Navigator extends Thread {
 			motor.stop();
 			motor.setAcceleration(3000);
 		}
-		travelTo(60, 30);
-		travelTo(30, 30);
-		travelTo(30, 60);
-		travelTo(60, 0);
+
+		
+		travelTo(60,30);
+		travelTo(30,30);
+		travelTo(30,60);
+		travelTo(60,0);
 	}
 
 	void travelTo(double x, double y) {
-
+		double currentX = this.odometer.getX();
+		double currentY = this.odometer.getY();
+		double deltaX, deltaY;
+		double desiredTheta;
+		
+		deltaX = Math.abs(currentX - x);
+		deltaY = Math.abs(currentY - y);
+		
+		desiredTheta = (Math.atan(deltaX/deltaY)) * (180/Math.PI);
+		turnTo(desiredTheta);
+		
 	}
 
 	void turnTo(double desiredTheta) {
@@ -47,8 +59,8 @@ public class Navigator extends Thread {
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
 
-				leftMotor.rotate(convertAngle(leftRadius, width, 90.0), true);
-				rightMotor.rotate(-convertAngle(rightRadius, width, 90.0), false);
+		//		leftMotor.rotate(convertAngle(leftRadius, width, 90.0), true);
+		//		rightMotor.rotate(-convertAngle(rightRadius, width, 90.0), false);
 			}
 
 		} else if (theta < desiredTheta) {
