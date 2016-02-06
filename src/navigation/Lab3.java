@@ -37,7 +37,7 @@ public class Lab3 {
 					TRACK);
 			OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, t);
 			//OdometryCorrection odometryCorrection = new OdometryCorrection(odometer);
-			//Navigator navigator = new Navigator()
+			Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK);
 
 			do {
 				// clear the display
@@ -70,8 +70,8 @@ public class Lab3 {
 
 				odometer.start();
 				odometryDisplay.start();
-				//start navigator
-				//completeCourse();
+				navigator.start();
+				completeCourse();
 				
 			}
 
@@ -81,7 +81,13 @@ public class Lab3 {
 		}
 		public static void completeCourse() throws
 			InterruptedException {
-				//to do 
+				int [][] waypoints = {{60,30}, {30,30}, {30,60}, {60,0}};
+				for (int[] point : waypoints) {
+					navigator.travelTo(point[0], point[1]);
+					while (navigator.isTravelling()) {
+						Thread.sleep(500);
+					}
+				}
 			
 			
 		}

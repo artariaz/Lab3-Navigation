@@ -25,16 +25,38 @@ public class Navigator extends Thread {
 	}
 	
 	public void run() {
-		for (EV3LargeRegulatedMotor motor : new EV3LargeRegulatedMotor[] { leftMotor, rightMotor }) {
-			motor.stop();
-			motor.setAcceleration(3000);
+		State state = State.INIT; 
+		while (true) {
+			switch (state) {
+			case INIT:
+				if (isNavigating) {
+					state = State.TURNING;
+				}
+				break;
+			case TURNING: 
+				turnTo(destAngle);
+				if (facingDest()) {
+					state = State.TRAVELLING;
+				}
+				break;
+			case TRAVELLING:
+				if (!checkIfDone(odometer.getX(), odometer.getY()){
+					updateTravel();
+				}
+				else {
+					rightMotor.stop();
+					leftMotor.stop();
+					isNavigating = false;
+					state = State.INIT;
+				}
+				break;
+			}
+			try {
+				Thread.sleep(30);
+			} catch (InterrupedException e) {
+				e.printStackTrace();
+			}
 		}
-
-		
-		travelTo(60,30);
-		travelTo(30,30);
-		travelTo(30,60);
-		travelTo(60,0);
 	}
 	
 	public double getDestAngle() {
