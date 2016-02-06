@@ -44,7 +44,7 @@ public class Navigator extends Thread {
 				}
 				break;
 			case TRAVELLING:
-				if (!checkIfDone(odometer.getX(), odometer.getY()){
+				if (!checkIfDone(odometer.getX(), odometer.getY())){
 					updateTravel();
 				}
 				else {
@@ -57,18 +57,11 @@ public class Navigator extends Thread {
 			}
 			try {
 				Thread.sleep(30);
-			} catch (InterrupedException e) {
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-<<<<<<< HEAD
-=======
 
-		travelTo(60, 30);
-		travelTo(30, 30);
-		travelTo(30, 60);
-		travelTo(60, 0);
->>>>>>> origin
 	}
 
 	public double getDestAngle() {
