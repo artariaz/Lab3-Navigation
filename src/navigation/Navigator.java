@@ -7,10 +7,13 @@ public class Navigator extends Thread {
 	private static final int ROTATE_SPEED = 150;
 	private EV3LargeRegulatedMotor rightMotor;
 	private EV3LargeRegulatedMotor leftMotor;
-	private boolean state = false;
+	private boolean isNavigating = false;
 	private Odometer odometer;
 	private double rightRadius, leftRadius, width;
+	private double destX, destY, destAngle;
 
+	enum State {INIT, TURNING, TRAVELLING};
+	
 	public Navigator(EV3LargeRegulatedMotor rightMotor, EV3LargeRegulatedMotor leftMotor, Odometer odometer, double rightRadius, double leftRadius, double width) {
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
@@ -20,7 +23,7 @@ public class Navigator extends Thread {
 		this.width = width; 
 
 	}
-
+	
 	public void run() {
 		for (EV3LargeRegulatedMotor motor : new EV3LargeRegulatedMotor[] { leftMotor, rightMotor }) {
 			motor.stop();
@@ -33,27 +36,44 @@ public class Navigator extends Thread {
 		travelTo(30,60);
 		travelTo(60,0);
 	}
-
-	void travelTo(double x, double y) {
+	
+	public double getDestAngle() {
 		double currentX = this.odometer.getX();
 		double currentY = this.odometer.getY();
-		double deltaX, deltaY, desiredTheta;
-		double distance;
+		double deltaX, deltaY;
 
-		deltaX = Math.abs(currentX - x);
-		deltaY = Math.abs(currentY - y);
+		deltaX = Math.abs(currentX - destX);
+		deltaY = Math.abs(currentY - destY);
 
-		desiredTheta = 90 - ((Math.atan(deltaY / deltaX)) * (180 / Math.PI));
-		turnTo(desiredTheta);
-		
-		
-		distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
+		destAngle = 90 - ((Math.atan(deltaY / deltaX)) * (180 / Math.PI));
+		return destAngle;
+	}
+
+	
+
+	void travelTo(double x, double y) {
+		this.destX = x;
+		this.destY = y;
+		this.destAngle = getDestAngle();
+		this.isNavigating = true;
+
+	}
+	
+	public boolean checkIfDone(double [] position) {
+		return true;
+	}
+	
+	public boolean facingDest() {
+		return true;
+	}
+	
+	
+	void updateTravel() {
 		rightMotor.setSpeed(FORWARD_SPEED);
 		leftMotor.setSpeed(FORWARD_SPEED);
 		
-		rightMotor.rotate(convertDistance(rightRadius, distance), true);
-		leftMotor.rotate(convertDistance(leftRadius, distance), false);
-
+		rightMotor.forward();
+		leftMotor.forward();
 	}
 
 	void turnTo(double desiredTheta) {
