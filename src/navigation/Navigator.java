@@ -9,11 +9,15 @@ public class Navigator extends Thread {
 	private EV3LargeRegulatedMotor leftMotor;
 	private boolean state = false;
 	private Odometer odometer;
+	private double rightRadius, leftRadius, width;
 
-	public Navigator(EV3LargeRegulatedMotor rightMotor, EV3LargeRegulatedMotor leftMotor, Odometer odometer) {
+	public Navigator(EV3LargeRegulatedMotor rightMotor, EV3LargeRegulatedMotor leftMotor, Odometer odometer, double rightRadius, double leftRadius, double width) {
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
 		this.odometer = odometer;
+		this.leftRadius = leftRadius;
+		this.rightRadius = rightRadius;
+		this.width = width; 
 
 	}
 
@@ -33,15 +37,23 @@ public class Navigator extends Thread {
 	void travelTo(double x, double y) {
 		double currentX = this.odometer.getX();
 		double currentY = this.odometer.getY();
-		double deltaX, deltaY;
-		double desiredTheta;
-		
+		double deltaX, deltaY, desiredTheta;
+		double distance;
+
 		deltaX = Math.abs(currentX - x);
 		deltaY = Math.abs(currentY - y);
-		
-		desiredTheta = 90 - ((Math.atan(deltaY/deltaX)) * (180/Math.PI));
+
+		desiredTheta = 90 - ((Math.atan(deltaY / deltaX)) * (180 / Math.PI));
 		turnTo(desiredTheta);
 		
+		
+		distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
+		rightMotor.setSpeed(FORWARD_SPEED);
+		leftMotor.setSpeed(FORWARD_SPEED);
+		
+		rightMotor.rotate(convertDistance(rightRadius, distance), true);
+		leftMotor.rotate(convertDistance(leftRadius, distance), false);
+
 	}
 
 	void turnTo(double desiredTheta) {
