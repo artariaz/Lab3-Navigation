@@ -37,6 +37,7 @@ public class Lab3 {
 					TRACK);
 			OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, t);
 			//OdometryCorrection odometryCorrection = new OdometryCorrection(odometer);
+			//Navigator navigator = new Navigator()
 
 			do {
 				// clear the display
@@ -69,20 +70,20 @@ public class Lab3 {
 
 				odometer.start();
 				odometryDisplay.start();
-				// odometryCorrection.start();
-
-				// spawn a new Thread to avoid SquareDriver.drive() from blocking
-				/*(new Thread() {
-					public void run() {
-						SquareDriver.drive(leftMotor, rightMotor, WHEEL_RADIUS,
-								WHEEL_RADIUS, TRACK);
-					}
-				}).start();*/
+				//start navigator
+				//completeCourse();
+				
 			}
 
 			while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 				;
 			System.exit(0);
+		}
+		public static void completeCourse() throws
+			InterruptedException {
+				//to do 
+			
+			
 		}
 
 }
