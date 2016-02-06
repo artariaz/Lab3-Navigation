@@ -20,6 +20,7 @@ public class Navigator extends Thread {
 			motor.stop();
 			motor.setAcceleration(3000);
 		}
+		
 		travelTo(60,30);
 		travelTo(30,30);
 		travelTo(30,60);
@@ -27,7 +28,7 @@ public class Navigator extends Thread {
 	}
 
 	void travelTo(double x, double y) {
-		
+
 	}
 
 	void turnTo(double theta) {
