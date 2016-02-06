@@ -34,11 +34,23 @@ public class Navigator extends Thread {
 
 	void turnTo(double desiredTheta) {
 		double theta = this.odometer.getTheta();
+		double rotationTheta;
 
 		if (theta > desiredTheta) {
-			// Turn right
+			rotationTheta = theta - desiredTheta;
+			if (rotationTheta > 180) {
+				// Turn left by 360 - rotation theta
+			} else {
+				// Turn right by rotation theta
+			}
+
 		} else if (theta < desiredTheta) {
-			// Turn left
+			rotationTheta = desiredTheta - theta;
+			if (rotationTheta > 180) {
+				// Turn right by 360 - rotation theta
+			} else {
+				// Turn left by rotation theta
+			}
 		}
 	}
 
