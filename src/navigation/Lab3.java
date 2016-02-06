@@ -16,84 +16,81 @@ import navigation.OdometerDisplay;
 public class Lab3 {
 
 	// Static Resources:
-		// Left motor connected to output A
-		// Right motor connected to output C
-		private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(
-				LocalEV3.get().getPort("A"));
-		private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(
-				LocalEV3.get().getPort("C"));
+	// Left motor connected to output A
+	// Right motor connected to output C
+	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 
-		// Constants
-		public static final double WHEEL_RADIUS = 2.1;
-		public static final double TRACK = 15.6;
-	 
-		public static void main(String[] args) {
-			int buttonChoice;
+	// Constants
+	public static final double WHEEL_RADIUS = 2.1;
+	public static final double TRACK = 15.6;
 
-			// some objects that need to be instantiated
+	public static void main(String[] args) {
+		int buttonChoice;
 
-			final TextLCD t = LocalEV3.get().getTextLCD();
-			Odometer odometer = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS,
-					TRACK);
-			OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, t);
-			//OdometryCorrection odometryCorrection = new OdometryCorrection(odometer);
-			Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK);
+		// some objects that need to be instantiated
 
-			do {
-				// clear the display
-				t.clear();
+		final TextLCD t = LocalEV3.get().getTextLCD();
+		Odometer odometer = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
+		OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, t);
+		// OdometryCorrection odometryCorrection = new
+		// OdometryCorrection(odometer);
+		Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK);
 
-				// ask the user whether the motors should drive in a square or float
-				t.drawString("< Left | Right >", 0, 0);
-				t.drawString("       |        ", 0, 1);
-				t.drawString(" Float | Drive  ", 0, 2);
-				t.drawString("motors | in a   ", 0, 3);
-				t.drawString("       | square ", 0, 4);
+		do {
+			// clear the display
+			t.clear();
 
-				buttonChoice = Button.waitForAnyPress();
-			} while (buttonChoice != Button.ID_LEFT
-					&& buttonChoice != Button.ID_RIGHT);
+			// ask the user whether the motors should drive in a square or float
+			t.drawString("< Left | Right >", 0, 0);
+			t.drawString("       |        ", 0, 1);
+			t.drawString(" Float | Drive  ", 0, 2);
+			t.drawString("motors | in a   ", 0, 3);
+			t.drawString("       | square ", 0, 4);
 
-			if (buttonChoice == Button.ID_LEFT) {
+			buttonChoice = Button.waitForAnyPress();
+		} while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
 
-				leftMotor.forward();
-				leftMotor.flt();
-				rightMotor.forward();
-				rightMotor.flt();
+		if (buttonChoice == Button.ID_LEFT) {
 
-				odometer.start();
-				odometryDisplay.start();
+			leftMotor.forward();
+			leftMotor.flt();
+			rightMotor.forward();
+			rightMotor.flt();
 
-			} else {
-				// start the odometer, the odometry display and (possibly) the
-				// odometry correction
+			odometer.start();
+			odometryDisplay.start();
 
-				odometer.start();
-				odometryDisplay.start();
-				navigator.start();
-				try {
-					completeCourse(navigator);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
+		} else {
+			// start the odometer, the odometry display and (possibly) the
+			// odometry correction
+
+			odometer.start();
+			odometryDisplay.start();
+			navigator.start();
+			try {
+				completeCourse(navigator);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
-			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
-			System.exit(0);
 		}
-		public static void completeCourse(Navigator nav) throws
-			InterruptedException {
-				int [][] waypoints = {{60,30}, {30,30}, {30,60}, {60,0}};
-				for (int[] point : waypoints) {
-					nav.travelTo(point[0], point[1]);
-					while (nav.isNavigating()) {
-						Thread.sleep(500);
-					}
-				}
-			
-			
+
+		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
+			;
+		System.exit(0);
+	}
+
+	public static void completeCourse(Navigator nav) throws InterruptedException {
+		int[][] waypoints = { { 60, 30 }, { 30, 30 }, { 30, 60 }, { 60, 0 } };
+		for (int[] point : waypoints) {
+			nav.travelTo(point[0], point[1]);
+			while (nav.isNavigating()) {
+				Thread.sleep(500);
+			}
 		}
+
+	}
 
 }

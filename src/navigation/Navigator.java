@@ -29,7 +29,7 @@ public class Navigator extends Thread {
 	}
 
 	public void run() {
-		State state = State.INIT; 
+		State state = State.INIT;
 		while (true) {
 			switch (state) {
 			case INIT:
@@ -37,17 +37,16 @@ public class Navigator extends Thread {
 					state = State.TURNING;
 				}
 				break;
-			case TURNING: 
+			case TURNING:
 				turnTo(destAngle);
 				if (facingDest()) {
 					state = State.TRAVELLING;
 				}
 				break;
 			case TRAVELLING:
-				if (!checkIfDone(odometer.getX(), odometer.getY())){
+				if (!checkIfDone(odometer.getX(), odometer.getY())) {
 					updateTravel();
-				}
-				else {
+				} else {
 					rightMotor.stop();
 					leftMotor.stop();
 					isNavigating = false;
@@ -124,19 +123,15 @@ public class Navigator extends Thread {
 				smallestAngle = 360 - rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle),
-				true);
-				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle),
-				false);
+				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
 			} else {
 				// Turn right by rotationAngle
 				smallestAngle = rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle),
-				true);
-				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle),
-				false);
+				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
 			}
 
 		} else if (currentAngle < desiredAngle) {
@@ -146,19 +141,15 @@ public class Navigator extends Thread {
 				smallestAngle = 360 - rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle),
-				true);
-				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle),
-				false);
+				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
 			} else {
 				// Turn left by rotationTheta
 				smallestAngle = rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle),
-				true);
-				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle),
-				false);
+				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
 			}
 		}
 
