@@ -47,21 +47,30 @@ public class Navigator extends Thread {
 	void turnTo(double desiredTheta) {
 		double theta = this.odometer.getTheta();
 		double rotationTheta;
-
+		double smallestTheta;
 		if (theta > desiredTheta) {
 			rotationTheta = theta - desiredTheta;
 			if (rotationTheta > 180) {
 				// Turn left by 360 - rotationTheta
+				smallestTheta = 360 - rotationTheta;
 			} else {
 				// Turn right by rotationTheta
+				smallestTheta = rotationTheta;
+				leftMotor.setSpeed(ROTATE_SPEED);
+				rightMotor.setSpeed(ROTATE_SPEED);
+
+		//		leftMotor.rotate(convertAngle(leftRadius, width, 90.0), true);
+		//		rightMotor.rotate(-convertAngle(rightRadius, width, 90.0), false);
 			}
 
 		} else if (theta < desiredTheta) {
 			rotationTheta = desiredTheta - theta;
 			if (rotationTheta > 180) {
 				// Turn right by 360 - rotationTheta
+				smallestTheta = 360 - rotationTheta;
 			} else {
 				// Turn left by rotationTheta
+				smallestTheta = rotationTheta;
 			}
 		}
 
@@ -70,5 +79,13 @@ public class Navigator extends Thread {
 	boolean isNavigating() {
 
 		return this.state;
+	}
+	
+	private static int convertDistance(double radius, double distance) {
+		return (int) ((180.0 * distance) / (Math.PI * radius));
+	}
+
+	private static int convertAngle(double radius, double width, double angle) {
+		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
 }
