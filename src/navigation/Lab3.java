@@ -71,20 +71,24 @@ public class Lab3 {
 				odometer.start();
 				odometryDisplay.start();
 				navigator.start();
-				completeCourse();
+				try {
+					completeCourse(navigator);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 			}
 
-			while (Button.waitForAnyPress() != Button.ID_ESCAPE)
-				;
+			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 			System.exit(0);
 		}
-		public static void completeCourse() throws
+		public static void completeCourse(Navigator nav) throws
 			InterruptedException {
 				int [][] waypoints = {{60,30}, {30,30}, {30,60}, {60,0}};
 				for (int[] point : waypoints) {
-					navigator.travelTo(point[0], point[1]);
-					while (navigator.isTravelling()) {
+					nav.travelTo(point[0], point[1]);
+					while (nav.isNavigating()) {
 						Thread.sleep(500);
 					}
 				}
