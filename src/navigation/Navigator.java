@@ -39,7 +39,7 @@ public class Navigator extends Thread {
 		deltaX = Math.abs(currentX - x);
 		deltaY = Math.abs(currentY - y);
 		
-		desiredTheta = (Math.atan(deltaX/deltaY)) * (180/Math.PI);
+		desiredTheta = 90 - ((Math.atan(deltaY/deltaX)) * (180/Math.PI));
 		turnTo(desiredTheta);
 		
 	}
