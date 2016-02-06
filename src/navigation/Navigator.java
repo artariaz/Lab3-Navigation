@@ -110,7 +110,7 @@ public class Navigator extends Thread {
 
 	boolean isNavigating() {
 
-		return this.state;
+		return this.isNavigating;
 	}
 	
 	private static int convertDistance(double radius, double distance) {
