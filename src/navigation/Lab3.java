@@ -44,15 +44,14 @@ public class Lab3 {
 			// ask the user whether the motors should drive in a square or float
 			t.drawString("< Left | Right >", 0, 0);
 			t.drawString("       |        ", 0, 1);
-			t.drawString(" Float | Drive  ", 0, 2);
-			t.drawString("motors | in a   ", 0, 3);
-			t.drawString("       | square ", 0, 4);
-
+			t.drawString(" Part2 |  Part1 ", 0, 2);
+			
 			buttonChoice = Button.waitForAnyPress();
 		} while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
 
 		if (buttonChoice == Button.ID_LEFT) {
 
+			//change this when finish obstacle detector
 			leftMotor.forward();
 			leftMotor.flt();
 			rightMotor.forward();
@@ -60,6 +59,7 @@ public class Lab3 {
 
 			odometer.start();
 			odometryDisplay.start();
+			//obstacleDetector.start();
 
 		} else {
 			// start the odometer, the odometry display and (possibly) the
