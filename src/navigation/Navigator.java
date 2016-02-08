@@ -1,5 +1,6 @@
 package navigation;
 
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigator extends Thread {
@@ -11,7 +12,7 @@ public class Navigator extends Thread {
 	private Odometer odometer;
 	private double rightRadius, leftRadius, width;
 	private double destX, destY, destAngle;
-	private double error = 5;
+	private double error = 3;
 
 	enum State {
 		INIT, TURNING, TRAVELLING
@@ -40,6 +41,7 @@ public class Navigator extends Thread {
 			case TURNING:
 				turnTo(destAngle);
 				if (facingDest()) {
+					Sound.beep();
 					state = State.TRAVELLING;
 				}
 				break;
@@ -47,6 +49,7 @@ public class Navigator extends Thread {
 				if (!checkIfDone(odometer.getX(), odometer.getY())) {
 					updateTravel();
 				} else {
+					Sound.twoBeeps();
 					rightMotor.stop();
 					leftMotor.stop();
 					isNavigating = false;
@@ -72,6 +75,7 @@ public class Navigator extends Thread {
 		deltaY = Math.abs(currentY - destY);
 
 		destAngle = 90 - ((Math.atan(deltaY / deltaX)) * (180 / Math.PI));
+		destAngle = (int) destAngle;
 		return destAngle;
 	}
 
@@ -110,6 +114,13 @@ public class Navigator extends Thread {
 
 		rightMotor.forward();
 		leftMotor.forward();
+		try {
+			
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	void turnTo(double desiredAngle) {
@@ -141,15 +152,15 @@ public class Navigator extends Thread {
 				smallestAngle = 360 - rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
+				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
 			} else {
-				// Turn left by rotationTheta
+				// Turn right by rotationTheta
 				smallestAngle = rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
+				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
 			}
 		}
 
