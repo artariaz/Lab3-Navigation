@@ -71,11 +71,25 @@ public class Navigator extends Thread {
 		double currentY = this.odometer.getY();
 		double deltaX, deltaY;
 
-		deltaX = Math.abs(currentX - destX);
-		deltaY = Math.abs(currentY - destY);
-
-		destAngle = 90 - ((Math.atan(deltaY / deltaX)) * (180 / Math.PI));
-		destAngle = (int) destAngle;
+		deltaX = destX-currentX;
+		deltaY = destY-currentY;
+		
+		if (Math.abs(deltaX) <= error  && deltaY >0) {
+			destAngle = 0;
+		}
+		else if (Math.abs(deltaX) <= error && deltaY<0) {
+			destAngle = 180;
+		}
+		else if (Math.abs(deltaY) <= error && deltaX > 0) {
+			destAngle = 90;
+		}
+		else if (Math.abs(deltaY) <= error && deltaX<0) {
+			destAngle = 270;
+		}
+		else {
+			destAngle = 90 - ((Math.atan(deltaY / deltaX)) * (180 / Math.PI));
+		
+		}
 		return destAngle;
 	}
 
@@ -91,7 +105,7 @@ public class Navigator extends Thread {
 		// x and y are the odometer's readings
 		// Compare with destX and destY with a degree of tolerance
 		// And return true if they are close to the desired values
-		if (destX + error >= x || destX - error <= x || destY + error >= y || destY - error <= y) {
+		if (destX + error >= x && destX - error <= x && destY + error >= y && destY - error <= y) {
 			return true;
 		} else
 			return false;
@@ -130,14 +144,14 @@ public class Navigator extends Thread {
 		if (currentAngle > desiredAngle) {
 			rotationAngle = currentAngle - desiredAngle;
 			if (rotationAngle > 180) {
-				// Turn left by 360 - rotationAngle
+				// Turn right by 360 - rotationAngle
 				smallestAngle = 360 - rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
 				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
 				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
 			} else {
-				// Turn right by rotationAngle
+				// Turn left by rotationAngle
 				smallestAngle = rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
@@ -148,7 +162,7 @@ public class Navigator extends Thread {
 		} else if (currentAngle < desiredAngle) {
 			rotationAngle = desiredAngle - currentAngle;
 			if (rotationAngle > 180) {
-				// Turn right by 360 - rotationTheta
+				// Turn left by 360 - rotationTheta
 				smallestAngle = 360 - rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
