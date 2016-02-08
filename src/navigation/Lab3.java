@@ -4,6 +4,10 @@ import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.hardware.sensor.SensorModes;
+import lejos.robotics.SampleProvider;
 import navigation.Odometer;
 import navigation.OdometerDisplay;
 
@@ -20,6 +24,8 @@ public class Lab3 {
 	// Right motor connected to output C
 	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
+	
+	private static final Port usPort = LocalEV3.get().getPort("S1");
 
 	// Constants
 	public static final double WHEEL_RADIUS = 2.1;
@@ -35,7 +41,11 @@ public class Lab3 {
 		OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, t);
 		// OdometryCorrection odometryCorrection = new
 		// OdometryCorrection(odometer);
-		Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK);
+		ObstacleDetector obstacleDetector = new ObstacleDetector(leftMotor, rightMotor);
+		SensorModes usSensor = new EV3UltrasonicSensor(usPort);		// usSensor is the instance
+		SampleProvider us = usSensor.getMode("Distance");	// usDistance provides samples from this instance
+		float[] usData = new float[us.sampleSize()];
+		Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK, us, usData, obstacleDetector);
 
 		do {
 			// clear the display
@@ -83,7 +93,8 @@ public class Lab3 {
 	}
 
 	public static void completeCourse(Navigator nav) throws InterruptedException {
-		int[][] waypoints = { { 60, 30 }, { 30, 30 }, { 30, 60 }, { 60, 0 } };
+		//int[][] waypoints = { { 60, 30 }, { 30, 30 }, { 30, 60 }, { 60, 0 } };	//use for navigation
+		int [][] waypoints = {{0,60}, {60,0}};	//use for Obstacle Detection
 		for (int[] point : waypoints) {
 			nav.travelTo(point[0], point[1]);
 			while (nav.isNavigating()) {

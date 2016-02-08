@@ -2,30 +2,38 @@ package navigation;
 
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.robotics.SampleProvider;
 
 public class Navigator extends Thread {
-	private static final int FORWARD_SPEED = 250;
-	private static final int ROTATE_SPEED = 150;
+	private static final int FORWARD_SPEED = 200;
+	private static final int ROTATE_SPEED = 125;
 	private EV3LargeRegulatedMotor rightMotor;
 	private EV3LargeRegulatedMotor leftMotor;
+	private ObstacleDetector obstacleDetector;
+	private SampleProvider us;
+	private float [] usData;
 	private boolean isNavigating = false;
 	private Odometer odometer;
 	private double rightRadius, leftRadius, width;
 	private double destX, destY, destAngle;
 	private double error = 3;
+	private double error2 = 8;
 
 	enum State {
-		INIT, TURNING, TRAVELLING
+		INIT, TURNING, TRAVELLING, EMERGENCY
 	};
 
 	public Navigator(EV3LargeRegulatedMotor rightMotor, EV3LargeRegulatedMotor leftMotor, Odometer odometer,
-			double rightRadius, double leftRadius, double width) {
+			double rightRadius, double leftRadius, double width, SampleProvider us, float[] usData, ObstacleDetector obstacleDetector) {
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
 		this.odometer = odometer;
 		this.leftRadius = leftRadius;
 		this.rightRadius = rightRadius;
 		this.width = width;
+		this.us = us;
+		this.usData = usData;
+		
 
 	}
 
@@ -46,13 +54,18 @@ public class Navigator extends Thread {
 				}
 				break;
 			case TRAVELLING:
+				if (checkEmergency()) {
+					state = State.EMERGENCY;
+					UltrasonicPoller usPoller = new UltrasonicPoller(us, usData, obstacleDetector);
+					usPoller.start();
+				}
 				if (checkIfDone(odometer.getX(), odometer.getY())) {
 					Sound.twoBeeps();
 					rightMotor.stop();
 					leftMotor.stop();
 					try {
 					
-					Thread.sleep(5000);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -63,6 +76,10 @@ public class Navigator extends Thread {
 					updateTravel();
 				}
 				break;
+			case EMERGENCY: 
+				if (!checkEmergency()) {
+					state = State.TURNING;
+				}
 			}
 			try {
 				Thread.sleep(30);
@@ -70,7 +87,17 @@ public class Navigator extends Thread {
 				e.printStackTrace();
 			}
 		}
-
+	}
+	public boolean checkEmergency() {
+		int distance;
+		us.fetchSample(usData,0);							
+		distance=(int)(usData[0]*100.0);					
+		obstacleDetector.processUSData(distance);						
+		try { Thread.sleep(25); } catch(Exception e){}
+		if (distance <15) {
+			return true;
+		}
+		return false;
 	}
 
 	public double getDestAngle() {
@@ -81,16 +108,16 @@ public class Navigator extends Thread {
 		deltaX = destX-currentX;
 		deltaY = destY-currentY;
 		
-		if (Math.abs(deltaX) <= error  && deltaY >0) {
+		if (Math.abs(deltaX) <= error2  && deltaY >0) {
 			destAngle = 0;
 		}
-		else if (Math.abs(deltaX) <= error && deltaY<0) {
+		else if (Math.abs(deltaX) <= error2 && deltaY<0) {
 			destAngle = 180;
 		}
-		else if (Math.abs(deltaY) <= error && deltaX > 0) {
+		else if (Math.abs(deltaY) <= error2 && deltaX > 0) {
 			destAngle = 90;
 		}
-		else if (Math.abs(deltaY) <= error && deltaX<0) {
+		else if (Math.abs(deltaY) <= error2 && deltaX<0) {
 			destAngle = 270;
 		}
 		else {
@@ -112,11 +139,8 @@ public class Navigator extends Thread {
 		// x and y are the odometer's readings
 		// Compare with destX and destY with a degree of tolerance
 		// And return true if they are close to the desired values
-<<<<<<< HEAD
-		if (destX + error >= x && destX - error <= x && destY + error >= y && destY - error <= y) {
-=======
 		if ((destX + error >= x && destX - error <= x) && (destY + error >= y && destY - error <= y)) {
->>>>>>> 97a0b1576d9f8113d3601f486ccbfa417226e238
+
 			return true;
 		} else
 			return false;
@@ -159,15 +183,15 @@ public class Navigator extends Thread {
 				smallestAngle = 360 - rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
+				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
 			} else {
 				// Turn left by rotationAngle
 				smallestAngle = rotationAngle;
 				leftMotor.setSpeed(ROTATE_SPEED);
 				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
+				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
+				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
 			}
 
 		} else if (currentAngle < desiredAngle) {
