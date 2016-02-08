@@ -46,14 +46,21 @@ public class Navigator extends Thread {
 				}
 				break;
 			case TRAVELLING:
-				if (!checkIfDone(odometer.getX(), odometer.getY())) {
-					updateTravel();
-				} else {
+				if (checkIfDone(odometer.getX(), odometer.getY())) {
 					Sound.twoBeeps();
 					rightMotor.stop();
 					leftMotor.stop();
+					try {
+					
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 					isNavigating = false;
 					state = State.INIT;
+				} else {
+					updateTravel();
 				}
 				break;
 			}
@@ -105,7 +112,11 @@ public class Navigator extends Thread {
 		// x and y are the odometer's readings
 		// Compare with destX and destY with a degree of tolerance
 		// And return true if they are close to the desired values
+<<<<<<< HEAD
 		if (destX + error >= x && destX - error <= x && destY + error >= y && destY - error <= y) {
+=======
+		if ((destX + error >= x && destX - error <= x) && (destY + error >= y && destY - error <= y)) {
+>>>>>>> 97a0b1576d9f8113d3601f486ccbfa417226e238
 			return true;
 		} else
 			return false;
@@ -128,13 +139,13 @@ public class Navigator extends Thread {
 
 		rightMotor.forward();
 		leftMotor.forward();
-		try {
+		/*try {
 			
-			Thread.sleep(200);
+			Thread.sleep(5);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	void turnTo(double desiredAngle) {
