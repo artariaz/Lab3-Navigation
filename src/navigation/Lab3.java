@@ -38,14 +38,17 @@ public class Lab3 {
 
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		Odometer odometer = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
-		OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, t);
+	
 		// OdometryCorrection odometryCorrection = new
 		// OdometryCorrection(odometer);
 		ObstacleDetector obstacleDetector = new ObstacleDetector(leftMotor, rightMotor);
+		@SuppressWarnings("resource")
 		SensorModes usSensor = new EV3UltrasonicSensor(usPort);		// usSensor is the instance
 		SampleProvider us = usSensor.getMode("Distance");	// usDistance provides samples from this instance
 		float[] usData = new float[us.sampleSize()];
-		Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK, us, usData, obstacleDetector);
+		UltrasonicPoller ultrasonicPoller = new UltrasonicPoller(us, usData, obstacleDetector);
+		OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, ultrasonicPoller, t);
+		Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK, obstacleDetector, ultrasonicPoller);
 
 		do {
 			// clear the display

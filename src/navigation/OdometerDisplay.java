@@ -7,11 +7,13 @@ public class OdometerDisplay extends Thread {
 	private static final long DISPLAY_PERIOD = 250;
 	private Odometer odometer;
 	private TextLCD t;
+	private UltrasonicPoller ultrasonicPoller;
 
 	// constructor
-	public OdometerDisplay(Odometer odometer, TextLCD t) {
+	public OdometerDisplay(Odometer odometer, UltrasonicPoller ultrasonicPoller, TextLCD t) {
 		this.odometer = odometer;
 		this.t = t;
+		this.ultrasonicPoller = ultrasonicPoller;
 	}
 
 	// run method (required for Thread)
@@ -21,15 +23,16 @@ public class OdometerDisplay extends Thread {
 
 		// clear the display once
 		t.clear();
-
+		int d = 0;
 		while (true) {
 			displayStart = System.currentTimeMillis();
 
 			// clear the lines for displaying odometry information
 			t.drawString("X:              ", 0, 0);
 			t.drawString("Y:              ", 0, 1);
-			t.drawString("T:              ", 0, 2);
-
+			t.drawString("T:              ", 0, 2); 
+			t.drawString("D: " + d, 0, 3);
+			d = ultrasonicPoller.getDistance();
 			// get the odometry information
 			odometer.getPosition(position, new boolean[] { true, true, true });
 
@@ -37,6 +40,7 @@ public class OdometerDisplay extends Thread {
 			for (int i = 0; i < 3; i++) {
 				t.drawString(formattedDoubleToString(position[i], 2), 3, i);
 			}
+			
 
 			// throttle the OdometryDisplay
 			displayEnd = System.currentTimeMillis();

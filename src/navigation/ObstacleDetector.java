@@ -5,7 +5,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class ObstacleDetector {
 
 	private final int bandCenter= 10, bandwidth = 2;
-	private final int motorStraight = 250, FILTER_OUT = 20;
+	private final int motorStraight = 100, FILTER_OUT = 20;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private int distance;
 	private int filterControl;
@@ -16,10 +16,6 @@ public class ObstacleDetector {
 		// Default Constructor
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
-		leftMotor.setSpeed(motorStraight); // Initalize motor rolling forward
-		rightMotor.setSpeed(motorStraight);
-		leftMotor.forward();
-		rightMotor.forward();
 		filterControl = 0;
 		this.distError = 0;
 		this.correction = 1.0;
@@ -55,7 +51,7 @@ public class ObstacleDetector {
 		this.distError = bandCenter - distance;
 
 		// At around bandcenter with bandwidth tolerance
-		if (Math.abs(distError) <= bandwidth) {
+		if (Math.abs(distError) >= bandwidth) {
 			// Set motors for robot to go straight
 			leftMotor.setSpeed(motorStraight);
 			rightMotor.setSpeed(motorStraight);
@@ -63,7 +59,7 @@ public class ObstacleDetector {
 			rightMotor.forward();
 		}
 		// Robot too close to the wall
-		else if (this.distance < bandCenter) {
+		else if (this.distance > bandCenter) {
 
 			// Calculate the correction coefficient
 			// The closer the robot is to the wall, the higher the coefficient
@@ -73,12 +69,12 @@ public class ObstacleDetector {
 			// When the robot is very close to the wall, it
 			// will have a correction greater than 1.75
 			// and it will go backwards instead.
-			if (correction > 1.75) {
+			/*if (correction > 1.875) {
 				leftMotor.setSpeed(motorStraight - 150);
 				rightMotor.setSpeed(motorStraight - 150);
 				leftMotor.backward();
-				rightMotor.backward();
-			} else {
+				rightMotor.backward();*/
+			//} else {
 				// Set motors for the robot to turn right (away from the wall)
 				// in proportion to the correction value
 				leftMotor.setSpeed((int) (correction * motorStraight));
@@ -86,11 +82,11 @@ public class ObstacleDetector {
 				leftMotor.forward();
 				// Right motor set to turn backwards for sharper turns
 				rightMotor.backward();
-			}
+			//}
 
 		}
 		// Robot too far from the wall
-		else if (this.distance > bandCenter) {
+		else if (this.distance < bandCenter) {
 			// Calculate correction coefficient, the furthest away, the higher
 			// the value.
 			correction = 1.0 + distance / 255.0;

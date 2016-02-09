@@ -16,7 +16,7 @@ public class UltrasonicPoller extends Thread{
 	private SampleProvider us;
 	private ObstacleDetector obstacleDetector;
 	private float[] usData;
-	private int distance;
+	private int distance=60;
 
 	
 	public UltrasonicPoller(SampleProvider us, float[] usData, ObstacleDetector obstacleDetector) {
@@ -32,9 +32,11 @@ public class UltrasonicPoller extends Thread{
 		while (true) {
 			us.fetchSample(usData,0);							// acquire data
 			distance=(int)(usData[0]*100.0);					// extract from buffer, cast to int
-			obstacleDetector.processUSData(distance);						// now take action depending on value
+		//	obstacleDetector.processUSData(distance);						// now take action depending on value
 			try { Thread.sleep(25); } catch(Exception e){}		// Poor man's timed sampling
 		}
 	}
-	
+	public int getDistance(){
+		return this.distance;
+	}
 }

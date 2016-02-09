@@ -10,35 +10,37 @@ public class Navigator extends Thread {
 	private EV3LargeRegulatedMotor rightMotor;
 	private EV3LargeRegulatedMotor leftMotor;
 	private ObstacleDetector obstacleDetector;
-	private SampleProvider us;
-	private float [] usData;
+
 	private boolean isNavigating = false;
 	private Odometer odometer;
 	private double rightRadius, leftRadius, width;
 	private double destX, destY, destAngle;
 	private double error = 3;
 	private double error2 = 8;
+	private UltrasonicPoller ultrasonicPoller;
 
 	enum State {
 		INIT, TURNING, TRAVELLING, EMERGENCY
 	};
 
 	public Navigator(EV3LargeRegulatedMotor rightMotor, EV3LargeRegulatedMotor leftMotor, Odometer odometer,
-			double rightRadius, double leftRadius, double width, SampleProvider us, float[] usData, ObstacleDetector obstacleDetector) {
+			double rightRadius, double leftRadius, double width, ObstacleDetector obstacleDetector, UltrasonicPoller ultrasonicPoller) {
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
 		this.odometer = odometer;
 		this.leftRadius = leftRadius;
 		this.rightRadius = rightRadius;
 		this.width = width;
-		this.us = us;
-		this.usData = usData;
+		this.obstacleDetector = obstacleDetector;
+		this.ultrasonicPoller = ultrasonicPoller;
+		
 		
 
 	}
 
 	public void run() {
 		State state = State.INIT;
+		ultrasonicPoller.start();
 		while (true) {
 			switch (state) {
 			case INIT:
@@ -55,9 +57,13 @@ public class Navigator extends Thread {
 				break;
 			case TRAVELLING:
 				if (checkEmergency()) {
+					try{
+						Thread.sleep(5000);
+					} catch(InterruptedException e){
+						e.printStackTrace();
+					}
 					state = State.EMERGENCY;
-					UltrasonicPoller usPoller = new UltrasonicPoller(us, usData, obstacleDetector);
-					usPoller.start();
+					obstacleDetector.processUSData(ultrasonicPoller.getDistance());
 				}
 				if (checkIfDone(odometer.getX(), odometer.getY())) {
 					Sound.twoBeeps();
@@ -89,12 +95,8 @@ public class Navigator extends Thread {
 		}
 	}
 	public boolean checkEmergency() {
-		int distance;
-		us.fetchSample(usData,0);							
-		distance=(int)(usData[0]*100.0);					
-		obstacleDetector.processUSData(distance);						
-		try { Thread.sleep(25); } catch(Exception e){}
-		if (distance <15) {
+		int distance = ultrasonicPoller.getDistance();									
+		if (distance <100) {
 			return true;
 		}
 		return false;
