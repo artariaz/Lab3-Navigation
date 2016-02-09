@@ -22,12 +22,13 @@ public class Lab3 {
 	// Static Resources:
 	// Left motor connected to output A
 	// Right motor connected to output C
+	//Ultrasonic sensor connected to port 1 (S1)
 	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
+	private static final EV3LargeRegulatedMotor sensorMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+	private static final Port usPort = LocalEV3.get().getPort("S1");	
 	
-	private static final Port usPort = LocalEV3.get().getPort("S1");
-
-	// Constants
+	// Constants used for odometry and navigating
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 15.6;
 
@@ -45,7 +46,7 @@ public class Lab3 {
 		float[] usData = new float[us.sampleSize()];
 		UltrasonicPoller ultrasonicPoller = new UltrasonicPoller(us, usData, obstacleDetector);
 		OdometerDisplay odometryDisplay = new OdometerDisplay(odometer, ultrasonicPoller, t);
-		Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK, obstacleDetector, ultrasonicPoller);
+		Navigator navigator = new Navigator(rightMotor, leftMotor, odometer, WHEEL_RADIUS, WHEEL_RADIUS, TRACK, obstacleDetector, ultrasonicPoller, sensorMotor);
 
 		do {
 			// clear the display
@@ -58,13 +59,18 @@ public class Lab3 {
 			
 			buttonChoice = Button.waitForAnyPress();
 		} while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
-
+		
+		//Left button selects part 2 settings (Obstacle Avoiding)
 		if (buttonChoice == Button.ID_LEFT) {
-
+			
+			//Start threads required for part 2
 			odometer.start();
 			odometryDisplay.start();
+			//setPart2 boolean allows the use ultrasonicpoller in navigation (which is not required for part 1) 
 			navigator.setPart2(true);
 			navigator.start();
+			
+			
 			try {
 				completeCourseObstacle(navigator);
 			} catch (InterruptedException e) {
@@ -76,13 +82,12 @@ public class Lab3 {
 
 
 		} else {
-			// start the odometer, the odometry display and (possibly) the
-			// odometry correction
-
+			// start threads required for part 1			
 			odometer.start();
 			odometryDisplay.start();
 			navigator.setPart2(false);
 			navigator.start();
+		
 			try {
 				completeCourse(navigator);
 			} catch (InterruptedException e) {
@@ -97,6 +102,7 @@ public class Lab3 {
 		System.exit(0);
 	}
 
+	//This method gives waypoints coordinates for navigating in part 1
 	public static void completeCourse(Navigator nav) throws InterruptedException {
 		int[][] waypoints = { { 60, 30 }, { 30, 30 }, { 30, 60 }, { 60, 0 } };	//use for navigation
 			for (int[] point : waypoints) {
@@ -107,8 +113,9 @@ public class Lab3 {
 		}
 
 	}
+
+	//This method gives waypoints coordinates for navigating in part 1
 	public static void completeCourseObstacle(Navigator nav) throws InterruptedException {
-		//int[][] waypoints = { { 60, 30 }, { 30, 30 }, { 30, 60 }, { 60, 0 } };	//use for navigation
 		int [][] waypoints = {{0,60}, {60,0}};	//use for Obstacle Detection
 		for (int[] point : waypoints) {
 			nav.travelTo(point[0], point[1]);
