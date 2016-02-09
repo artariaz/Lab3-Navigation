@@ -1,7 +1,11 @@
 package navigation;
 
 import lejos.hardware.lcd.TextLCD;
-
+/*
+ * Group: 41
+ * Katy Dong      (260610798)
+ * Arta Riazrafat (260636821)
+ */
 public class OdometerDisplay extends Thread {
 
 	private static final long DISPLAY_PERIOD = 250;

@@ -1,8 +1,12 @@
 package navigation;
 
 import lejos.robotics.SampleProvider;
-
-public class UltrasonicPoller extends Thread {
+/*
+ * Group: 41
+ * Katy Dong      (260610798)
+ * Arta Riazrafat (260636821)
+ */
+class UltrasonicPoller extends Thread {
 	private SampleProvider us;
 	private float[] usData;
 	private int distance = 0;

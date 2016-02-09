@@ -3,7 +3,11 @@ package navigation;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
-
+/*
+ * Group: 41
+ * Katy Dong      (260610798)
+ * Arta Riazrafat (260636821)
+ */
 public class Navigator extends Thread {
 
 	// Resources required to navigate robot
