@@ -21,7 +21,7 @@ public class Odometer extends Thread {
 	private double thetaRad = 0;
 
 	// default constructor
-	// Motors, radius and width are passed in as parameters from the Lab2 class.
+	// Motors, radius and width are passed in as parameters from the Lab3 class.
 	public Odometer(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, double wheelRadius,
 			double width) {
 		x = 0.0;
