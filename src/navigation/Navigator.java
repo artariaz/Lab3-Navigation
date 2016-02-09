@@ -18,6 +18,7 @@ public class Navigator extends Thread {
 	private double error = 3;
 	private double error2 = 8;
 	private UltrasonicPoller ultrasonicPoller;
+	private boolean part2 = false;
 
 	enum State {
 		INIT, TURNING, TRAVELLING, EMERGENCY
@@ -40,6 +41,7 @@ public class Navigator extends Thread {
 
 	public void run() {
 		State state = State.INIT;
+		if(part2)
 		ultrasonicPoller.start();
 		while (true) {
 			switch (state) {
@@ -96,7 +98,7 @@ public class Navigator extends Thread {
 	}
 	public boolean checkEmergency() {
 		int distance = ultrasonicPoller.getDistance();									
-		if (distance <100) {
+		if (distance <30) {
 			return true;
 		}
 		return false;
@@ -228,5 +230,9 @@ public class Navigator extends Thread {
 
 	private static int convertAngle(double radius, double width, double angle) {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
+	}
+	
+	public void setPart2(boolean val){
+		this.part2 = val;
 	}
 }

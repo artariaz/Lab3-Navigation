@@ -38,9 +38,6 @@ public class Lab3 {
 
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		Odometer odometer = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
-	
-		// OdometryCorrection odometryCorrection = new
-		// OdometryCorrection(odometer);
 		ObstacleDetector obstacleDetector = new ObstacleDetector(leftMotor, rightMotor);
 		@SuppressWarnings("resource")
 		SensorModes usSensor = new EV3UltrasonicSensor(usPort);		// usSensor is the instance
@@ -64,15 +61,19 @@ public class Lab3 {
 
 		if (buttonChoice == Button.ID_LEFT) {
 
-			//change this when finish obstacle detector
-			leftMotor.forward();
-			leftMotor.flt();
-			rightMotor.forward();
-			rightMotor.flt();
-
 			odometer.start();
 			odometryDisplay.start();
-			//obstacleDetector.start();
+			navigator.setPart2(true);
+			navigator.start();
+			try {
+				completeCourseObstacle(navigator);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		
+
 
 		} else {
 			// start the odometer, the odometry display and (possibly) the
@@ -80,6 +81,7 @@ public class Lab3 {
 
 			odometer.start();
 			odometryDisplay.start();
+			navigator.setPart2(false);
 			navigator.start();
 			try {
 				completeCourse(navigator);
@@ -96,6 +98,16 @@ public class Lab3 {
 	}
 
 	public static void completeCourse(Navigator nav) throws InterruptedException {
+		int[][] waypoints = { { 60, 30 }, { 30, 30 }, { 30, 60 }, { 60, 0 } };	//use for navigation
+			for (int[] point : waypoints) {
+			nav.travelTo(point[0], point[1]);
+			while (nav.isNavigating()) {
+				Thread.sleep(500);
+			}
+		}
+
+	}
+	public static void completeCourseObstacle(Navigator nav) throws InterruptedException {
 		//int[][] waypoints = { { 60, 30 }, { 30, 30 }, { 30, 60 }, { 60, 0 } };	//use for navigation
 		int [][] waypoints = {{0,60}, {60,0}};	//use for Obstacle Detection
 		for (int[] point : waypoints) {
